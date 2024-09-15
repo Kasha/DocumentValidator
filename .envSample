@@ -1,0 +1,9 @@
+STAGING = "dev"
+DB_SERVICE = "mysql+mysqlconnector"
+DB_USER = "root"
+DB_PASSWORD = "123456"
+DB_HOST = "localhost"
+DB_PORT = 3306
+DB_NAME = "dorkomeran"
+DB_POOL_MIN_SIZE = 1
+DB_POOL_MAX_SIZE = 5

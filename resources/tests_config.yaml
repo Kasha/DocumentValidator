@@ -1,0 +1,12 @@
+html:
+  test_type: "html_ver1"
+  tests:
+    -
+      type: "short_title"
+      query: 20
+    -
+      type: "footer_date"
+      query: ""
+    -
+      type: "sum_first_row"
+      query: ""

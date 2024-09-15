@@ -1,0 +1,8 @@
+html:
+  schema_version: "html_ver1"
+  document_id: {"attr": "id", "cmd": "//table[@id]"}
+  title: { "cmd": "//caption" }
+  header: { "cmd": "//thead//*" }
+  body: { "cmd": "//tbody//*" }
+  footer: { "cmd": "//tfoot//td",
+            "regex":{"creation_date":"(?!^Creation:$)? ([0-9A-Za-z]+) ", "creation_country": "(?!^Creation:$)? ([A-Za-z]+)"}}
