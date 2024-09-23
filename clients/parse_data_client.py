@@ -5,7 +5,6 @@ from clients.parse_data_client_base import IParserDataClient
 from resources.config import app_config, logger
 from resources.exception import InvalidInputPathError, Any
 from resources.utils import class_factory
-from models.dynamic_model_pydantic import DynamicPydanticModel, html_doc_schema
 from repositories.db_discrepancy import DiscrepancyRepository, Discrepancy
 from repositories.db_document import ICollectionRepository
 
