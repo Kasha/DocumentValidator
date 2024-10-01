@@ -1,72 +1,138 @@
-Example of DDD Python software for Parsing and Validating documents - IO bound and CPU bound (loading files, parsing files, CRUD DB operations) using AsyncIO,  Multi-Processing, and Coroutine.
-MongoDB - Async Database using AsyncIOMotorClient + Beanie (ODM)
-Files IO - Async  aiofiles
-Pydantic and Beanie Document Model for DB CRUD
-MyPy and Pydantinc for type errors and validation
-Poetry - dependency management and packaging
+# Parsing documents for validation or finding discrepancies according to set of structure and test rules.
 
-Summary:
-Parser for parsing documents (default - html files) according to docs\-config.yaml rules for valid document
-Parsing using lxml.xpath and regular expression for finding discrepancies and their location (-1 for missing data structure and position for invalid content)
-Document expected data and discovered discrepancies are inserted into MongoDB docs and discrepancy collection.
-Parser.parse() for Parsing 1…N documents
-DocumentValidator.validate() for validating document with 4 optional results(`VALID`, `INVALID`, `ERROR`,
-`NOT_PROCESSED`,
-)
- or validate_all() for finding all discrepancies 
+# Guide lines: DDD+Performance+Dynamic docs structure and tests for finding discrepancies.
 
+Extendability design for future support of different:
 
-A.Technology:
-DDD (Domain Driven Design) and structure (Interfaces for extending and future different behavior implementation)
-1. Domains - Parser, DocumentValidator - Main Classes 
-2. Clients - ParserClient , DocumentValidatorClient orchestrating and executing the desired behavior services and repositories
-3. Services - Parsing uploaded HTML files using lxml and RegularExpression. Parsing Documents into DocdDB and DiscrepancyDB models. Basic implementation of Parsers for future parsing of more file types.
-4. Repositories and Models - db_base, db_discrepancy, and db_document implementing MongoDB CRUD based on DocsDB, Doc, DiscrepancyDB, and Discrepancy models designed for HTML parsing as defined. db_base is an abstract class (interface) also using generic dyntamic.factory model for other document types' future support.
-5. Resources - utility functions, dependencies (Injection for chosen implemented Domain+Client+Reposetiry+Services), config class parsing and using docs_config.yaml documents parsing rules (implemented and used), test_config.yaml (for future use) 
-6. I’m using upsert for updating documents if not exist and inserting them otherwise. I’ve also added a layer of scheme version so the document is a combination of document_id+scheme_version+file_name 
-B.Structure:
-7. DB name beancure, MongoDB (Atlas - Remote), docs collection, discrepancy collection
-8. .env +.resources/settings setup and configuration
-9. Poetry for resource dependencies management
-10. Command line application with external arguments,  --docs (absolute path and file name or path) and --tests (not implemented)  or --help
-11. --docs argument example: --docs=C:\Dev\BeancureDocumentValidator\storage\
-12. main.py - main execution file
-C. How to install: 
-13. git clone https://github.com/Kasha/BeancureDocumentValidator.git
-14. From root folder: (command line, bash, terminal)
-15.  Run:
-install poetry if you don't have: pip install poetry
-poetry init
-poetry shell
-Poetry install
+* Types of document structure and test rules  
+* Repositories (Different Data Storage options),  
+* Parsers   
+* Validators
 
-D.MongoDB
-16. Async+Process Pooling for loading files and keeping them in DB
-17. Async Database AsyncIOMotorClient + Beanie (ODM)
-18. Pydantic and Beanie Document for DB CRUD
-E. Multi Processing and Coroutine:
-Asyncio for coroutine (Async methods) + aiofiles (for files ) + concurrent.futures.ProcessPoolExecuto (Real Parallel) + AsyncIOMotorClient (Async) MongoDB 
-F. Design Patterns and Data Structure:
-19. Injection like of behavior implementation: get_validator_domain, get_parser_domain
-20. Class_factory and Strategic like for creating supported files parsing and extracting according to docs_config.yaml (Any definition of other types besides HTML will raise ParserServiceNotImplementedError. Implemented Service for parsing HTML ParserDataServiceHTML
-21. Polymorphism 
-22. DB Design Patterns: scheme versioning
-23. The Extended Reference Pattern
-G.Guide Lines:
-24. DDD, Abstraction, Small functions, Popper Error handling, and log data, declaring data types for every variable and forcing function parameters names.
-25. Acync+Processes for best io/cpu bound performance.
-26. Empty tests/scripts (PyTests, Linter and Coverage) E2E, Integration, UnitTests
-H. Structure:
+# **Beancure Document Validator**
 
-I.Restrictions:
-Emphasizing Type Checking:
-Using MyPy and Pydantic
-Setting the data type for each argument, with limitation of time and 3’rd party documentation issues and complexability forced me to use also ”Any” as the type, so I could increase development time and still keep the data type syntax
+## **Introduction**
 
-Implementation of:
-await domain_document_validator.validate_all()
+**Beancure Document Validator** is a Python-based application designed for asynchronous, efficient parsing and validation of documents (e.g., HTML files). It follows Domain-Driven Design (DDD) principles and utilizes AsyncIO, multiprocessing, and coroutines for handling I/O-bound and CPU-bound tasks. MongoDB is used as the backend for data persistence, with **AsyncIOMotorClient** and **Beanie** (ODM) for async database operations. The tool parses documents based on rules defined in a `docs-config.yaml` file, identifies discrepancies using XPath and regex, and inserts the findings into MongoDB collections Docs and Discrepancy.
 
-Empty skeleton for one document validation:
-await domain_document_validator.validate())
+## **Table of Contents**
 
+* Features  
+* Installation  
+* Usage  
+* Technology Stack  
+* Project Structure  
+* Configuration  
+* Contributors  
+* License
 
+## **Features**
+
+* **Asynchronous document parsing** using `aiofiles` and `asyncio`, supporting high-performance file I/O. Finding discrepancies and their location (default support for HTML files)  
+* **Document validation** with results indicating VALID, INVALID, ERROR, or NOT\_PROCESSED.  
+* **MongoDB integration** using `AsyncIOMotorClient` and `Beanie` for CRUD operations, with upsert functionality and schema versioning.  
+* **Configurable parsing rules** via `docs-config.yaml` to customize the validation logic and rules.  
+* **Multiprocessing support** for CPU-bound tasks like file parsing using `concurrent.futures.ProcessPoolExecutor`.  
+* **Type validation** and error checking using Pydantic and MyPy.  
+* **Domain-Driven Design (DDD)** with clearly defined domains (Parser, DocumentValidator) and interfaces for future extensibility.  
+* **Command-line interface (CLI)** for easy interaction and execution.
+
+## **Installation**
+
+To set up the project locally, follow these steps (CLI, Bash, Terminal, ZSH):
+
+1. Clone the repository:  
+   `git clone https://github.com/Kasha/BeancureDocumentValidator.git`
+
+`cd BeancureDocumentValidator`
+
+2. Install [Poetry](https://python-poetry.org/) for managing dependencies:  
+   `pip install poetry`
+
+   `poetry install`
+
+3. Activate the virtual environment:  
+   `poetry shell`  
+4. Set up environment variables and configuration:  
+   * Create a free account for MongoDB Atlas:  
+   * Configure the MongoDB connection string and other settings in `.env` and `resources/settings`.
+
+## **Usage**
+
+The command-line tool offers the following options for document parsing and validation:
+
+**Help**:  
+`python main.py --help`  
+**Run the main parser**  (CLI, Bash, Terminal, ZSH):  
+`python main.py --docs=<absolute_path_to_docs>`  
+**Example:**  
+`python main.py --docs=C:\Dev\BeancureDocumentValidator\storage\`
+
+### **Parsing and Validation Workflow:**
+
+* **Parser.parse()**: Parses 1 or more documents.  
+* **DocumentValidator.validate\_all()**: Scans input files for discrepancies  
+* **DocumentValidator.validate()**: Validates a document and returns one of the following statuses: `VALID`, `INVALID`, `ERROR`, or `NOT_PROCESSED` (Not Implemented, yet)  
+* 
+
+## **Technology Stack**
+
+* **Python** 3.9+  
+* **MongoDB Atlas** (Remote) with `AsyncIOMotorClient` and `Beanie` (ODM)  
+* **AsyncIO** and **aiofiles** for asynchronous I/O operations  
+* **lxml** and **regex** for HTML parsing  
+* **Pydantic** for data validation and type checking  
+* **MyPy** for static type checking  
+* **Poetry** for dependency management and packaging
+
+## **Project Structure**
+
+graphql  
+Copy code  
+`.`  
+`├── main.py                 # Main entry point of the application`  
+`├── beancure/`  
+`│   ├── domains/            # Domain layer with Parser and Validator logic`  
+`│   ├── services/           # Services for document parsing and validation`  
+`│   ├── clients/            # Clients orchestrating domains and services`  
+`│   ├── repositories/       # Repositories for MongoDB CRUD operations`  
+`│   ├── models/             # Pydantic and Beanie models for database entities`  
+`│   ├── config/             # Configuration files and utilities`  
+`│   ├── resources/          # YAML config files, including docs_config.yaml`  
+`│   └── utils/              # Helper functions`  
+`├── tests/                  # Pytest unit, integration, and E2E tests (empty)`  
+`├── pyproject.toml          # Poetry configuration file`  
+`└── README.md               # Project documentation`
+
+### **Key Components:**
+
+* **Domains**: Core business logic (Parser, DocumentValidator).  
+* **Clients**: High-level orchestrators for executing domain operations.  
+* **Services**: Actual parsing and validation logic implementations, designed for future extensibility for different file types, dynamic validation file structure, and tests rules.  
+* **Repositories**: Interfaces and implementations for database operations, including support for schema versioning.  
+* **Models**: Pydantic models define the document and discrepancy data structures.
+
+## **Configuration**
+
+### **docs-config.yaml**
+
+The `docs-config.yaml` file defines the parsing and validation rules. `docs-config.yaml` contains XPath and regex expressions to detect discrepancies in the document.
+
+### **.env**
+
+Set up MongoDB connection and other environment-specific settings in the `.env` file.
+
+Example .env`for MongoDB configuration:
+
+`MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority`  
+`DB_NAME=beancure`
+
+## **Contributors**
+
+* **Kasha** \- [GitHub Profile](https://github.com/Kasha)
+
+## **License**
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
