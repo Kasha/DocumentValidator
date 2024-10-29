@@ -58,7 +58,7 @@ To set up the project locally, follow these steps (CLI, Bash, Terminal, ZSH):
 4. Set up environment variables and configuration:  
    * Create a free account for MongoDB Atlas:  
    * Configure the MongoDB connection string and other settings in `.env` and `resources/settings`.
-
+5. Extract storage.zip under the root folder, used as demo HTML input files
 ## **Usage**
 
 The command-line tool offers the following options for document parsing and validation:
