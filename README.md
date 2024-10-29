@@ -1,5 +1,7 @@
-# Parsing documents for validation or finding discrepancies according to set of structure and test rules.
-
+# Basic DDD + implementation: Parsing documents for validation or finding discrepancies according to structure and test rules.
+* Dynamic validation rules, extraction, and validator
+* Ready for extension of any doc type and data structure, tests and validation
+  
 # Guide lines: DDD+Performance+Dynamic docs structure and tests for finding discrepancies.
 
 Extendability design for future support of different:
@@ -9,7 +11,7 @@ Extendability design for future support of different:
 * Parsers   
 * Validators
 
-# **Beancure Document Validator**
+# **Document Validator**
 
 ## **Introduction**
 
