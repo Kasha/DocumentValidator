@@ -1,9 +1,9 @@
 STAGING = "dev"
-DB_SERVICE = "mysql+mysqlconnector"
-DB_USER = "root"
-DB_PASSWORD = "123456"
+STORAGE_TEST_FILE_NAME = "discrepancy1.yaml"
+DB_USER = "liadky"
+DB_PASSWORD = "yAucLSSsWzwCKL6p"
 DB_HOST = "localhost"
 DB_PORT = 3306
-DB_NAME = "dorkomeran"
+DB_NAME = "beancure"
 DB_POOL_MIN_SIZE = 1
 DB_POOL_MAX_SIZE = 5

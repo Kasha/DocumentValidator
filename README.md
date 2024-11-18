@@ -15,7 +15,7 @@ Extendability design for future support of different:
 
 ## **Introduction**
 
-**Beancure Document Validator** is a Python-based application designed for asynchronous, efficient parsing and validation of documents (e.g., HTML files). It follows Domain-Driven Design (DDD) principles and utilizes AsyncIO, multiprocessing, and coroutines for handling I/O-bound and CPU-bound tasks. MongoDB is used as the backend for data persistence, with **AsyncIOMotorClient** and **Beanie** (ODM) for async database operations. The tool parses documents based on rules defined in a `docs-config.yaml` file, identifies discrepancies using XPath and regex, and inserts the findings into MongoDB collections Docs and Discrepancy.
+**Document Validator** is a Python-based application designed for asynchronous, efficient parsing and validation of documents (e.g., HTML files). It follows Domain-Driven Design (DDD) principles and utilizes AsyncIO, multiprocessing, and coroutines for handling I/O-bound and CPU-bound tasks. MongoDB is used as the backend for data persistence, with **AsyncIOMotorClient** and **Beanie** (ODM) for async database operations. The tool parses documents based on rules defined in a `docs-config.yaml` file, identifies discrepancies using XPath and regex, and inserts the findings into MongoDB collections Docs and Discrepancy.
 
 ## **Table of Contents**
 
@@ -43,22 +43,26 @@ Extendability design for future support of different:
 
 To set up the project locally, follow these steps (CLI, Bash, Terminal, ZSH):
 
-1. Clone the repository:  
-   `git clone https://github.com/Kasha/BeancureDocumentValidator.git`
+1. Clone DocumentValidator repository:  
+   `git clone https://github.com/Kasha/DocumentValidator.git`
 
-`cd BeancureDocumentValidator`
-
-2. Install [Poetry](https://python-poetry.org/) for managing dependencies:  
-   `pip install poetry`
-
-   `poetry install`
+2. `cd DocumentValidator`
 
 3. Activate the virtual environment:  
-   `poetry shell`  
-4. Set up environment variables and configuration:  
-   * Create a free account for MongoDB Atlas:  
-   * Configure the MongoDB connection string and other settings in `.env` and `resources/settings`.
-5. Extract storage.zip under the root folder, used as demo HTML input files
+   `poetry shell` 
+
+4. Install [Poetry](https://python-poetry.org/) for managing dependencies:  
+   `pip install poetry`
+   `poetry install`
+
+ 
+5. Set up environment variables and configuration:  
+   * Create a free account for MongoDB Atlas, https://cloud.mongodb.com/: 
+     * Two collections will be created with the first successful running: Docs and Discrepancy 
+     * Create .env file and copy settings from .envSample
+     * Configure .env with suitable settings from your MongoDB Atlas
+6. Extract storage.zip under the root folder, used as demo HTML input files
+
 ## **Usage**
 
 The command-line tool offers the following options for document parsing and validation:
@@ -68,7 +72,7 @@ The command-line tool offers the following options for document parsing and vali
 **Run the main parser**  (CLI, Bash, Terminal, ZSH):  
 `python main.py --docs=<absolute_path_to_docs>`  
 **Example:**  
-`python main.py --docs=C:\Dev\BeancureDocumentValidator\storage\`
+`python main.py --docs=C:\Dev\DocumentValidator\storage\`
 
 ### **Parsing and Validation Workflow:**
 
@@ -93,7 +97,7 @@ graphql
 Copy code  
 `.`  
 `├── main.py                 # Main entry point of the application`  
-`├── beancure/`  
+`├── documentvalidator/`  
 `│   ├── domains/            # Domain layer with Parser and Validator logic`  
 `│   ├── services/           # Services for document parsing and validation`  
 `│   ├── clients/            # Clients orchestrating domains and services`  
