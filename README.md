@@ -30,11 +30,12 @@ Extendability design for future support of different:
 
 ## **Features**
 
-* **Asynchronous document parsing** using `aiofiles` and `asyncio`, supporting high-performance file I/O. Finding discrepancies and their location (default support for HTML files)  
+* **Asynchronous document parsing** using `aiofiles` + `asyncio` supporting high-performance file I/O. 
+* **Finding discrepancies** and their location (default support for HTML files)
 * **Document validation** with results indicating VALID, INVALID, ERROR, or NOT\_PROCESSED.  
-* **MongoDB integration** using `AsyncIOMotorClient` and `Beanie` for CRUD operations, with upsert functionality and schema versioning.  
+* **Atlas MongoDB's integration** using `AsyncIOMotorClient` and `Beanie` for CRUD operations, with transactional multi documents upsert functionality.  
 * **Configurable parsing rules** via `docs-config.yaml` to customize the validation logic and rules.  
-* **Multiprocessing support** for CPU-bound tasks like file parsing using `concurrent.futures.ProcessPoolExecutor`.  
+* **Multiprocessing+Coroutine support** for CPU-bound tasks like file parsing using `concurrent.futures.ProcessPoolExecutor`.  
 * **Type validation** and error checking using Pydantic and MyPy.  
 * **Domain-Driven Design (DDD)** with clearly defined domains (Parser, DocumentValidator) and interfaces for future extensibility.  
 * **Command-line interface (CLI)** for easy interaction and execution.
@@ -91,10 +92,15 @@ The command-line tool offers the following options for document parsing and vali
 * **MyPy** for static type checking  
 * **Poetry** for dependency management and packaging
 
+## **Special Considerations** 
+* **Concurrency and Parallelism** for IO-Bound+CPU-Bound, high performance and responsiveness
+* **Models typecheck, validation binding with DB model** Pydantic+Beanie
+* **MongoDB Transactional Multi Documents Upsert** Multi documents insert or update bounded under transaction - Commit, Abort
+* **Patterns** 
+  * Class Factory and Strategic, Dynamic Service Parser for Document Type and Required Parsing (according to config.yaml or cli arguments)
+  * MongoDB Schema versioning and The Extended Reference.
 ## **Project Structure**
 
-graphql  
-Copy code  
 `.`  
 `├── main.py                 # Main entry point of the application`  
 `├── documentvalidator/`  
@@ -117,7 +123,7 @@ Copy code
 * **Services**: Actual parsing and validation logic implementations, designed for future extensibility for different file types, dynamic validation file structure, and tests rules.  
 * **Repositories**: Interfaces and implementations for database operations, including support for schema versioning.  
 * **Models**: Pydantic models define the document and discrepancy data structures.
-
+* **Collections** DocsDB(`docs`), DiscrepancyDB(`discrepancy`) MongoDB collections for DB: beancure
 ## **Configuration**
 
 ### **docs-config.yaml**

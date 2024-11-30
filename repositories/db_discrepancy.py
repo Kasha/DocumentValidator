@@ -39,7 +39,7 @@ class DiscrepancyRepository(ICollectionRepository):
                 DiscrepancyDB.schema_version == item_model.schema_version,
                 DiscrepancyDB.file_name == item_model.file_name,
                 DiscrepancyDB.discrepancy_type == item_model.discrepancy_type,
-        )
+            )
         if res_doc is None:
             logger.debug(
                 f"failed reading discrepancy document_id={item_model.document_id},"
@@ -79,10 +79,10 @@ class DiscrepancyRepository(ICollectionRepository):
             )
         else:
             item_updated = await DiscrepancyDB.find_one(DiscrepancyDB.document_id == item_update_data_doc.document_id,
-                                                 DiscrepancyDB.schema_version == item_update_data_doc.schema_version,
-                                                 DiscrepancyDB.file_name == item_update_data_doc.file_name,
-                                                 DiscrepancyDB.discrepancy_type == item_update_data_doc.discrepancy_type,
-                                                 ).upsert(
+                                                        DiscrepancyDB.schema_version == item_update_data_doc.schema_version,
+                                                        DiscrepancyDB.file_name == item_update_data_doc.file_name,
+                                                        DiscrepancyDB.discrepancy_type == item_update_data_doc.discrepancy_type,
+                                                        ).upsert(
                 {
                     "$set": {
                         **data.dict()

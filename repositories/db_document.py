@@ -92,38 +92,38 @@ class DocumentRepository(ICollectionRepository):
         return item_updated
 
     async def update_many(self, documents: list[dict[str, Any]]) -> list[Any]:
-        """Update many documents in the database"""
+        """Update many documents in the database, do an upsert and wrap with a transaction"""
 
         res_insert_or_update_docs: list[Any] = []
-        async with BulkWriter() as bulk_writer:
-            for data in documents:
-                items_doc_model: Model = Doc(**data)
-                item_data_doc_db: Document = DocsDB(**items_doc_model.dict())
+        async with await DocsDB.get_motor_collection().database.client.start_session() as session:
+            async with session.start_transaction():
+                for data in documents:
+                    items_doc_model: Model = Doc(**data)
+                    item_data_doc_db: Document = DocsDB(**items_doc_model.dict())
 
-                logger.debug(
-                    f"Attempting to a create or update document data in mongodb database, docs collection. "
-                    f"document_id:{item_data_doc_db.document_id['value']}, "
-                    f"file_name:{item_data_doc_db.file_name}, "
-                    f"schema_version:{item_data_doc_db.schema_version}, "
-                    f"type:{item_data_doc_db.type}",
-                )
+                    logger.debug(
+                        f"Attempting to a create or update document data in mongodb database, docs collection. "
+                        f"document_id:{item_data_doc_db.document_id['value']}, "
+                        f"file_name:{item_data_doc_db.file_name}, "
+                        f"schema_version:{item_data_doc_db.schema_version}, "
+                        f"type:{item_data_doc_db.type}",
+                    )
 
-                item_insert_or_update_doc = await DocsDB.find_one(
-                    DocsDB.document_id["value"] == item_data_doc_db.document_id["value"],
-                    DocsDB.schema_version == item_data_doc_db.schema_version,
-                    DocsDB.file_name == item_data_doc_db.file_name,
-                    DocsDB.type == item_data_doc_db.type
-                ).upsert(Set({
-                    **items_doc_model.dict()
-                }), on_insert=item_data_doc_db)
-                if isinstance(item_insert_or_update_doc, DocsDB):
-                    msg: str = f"File: {item_data_doc_db.file_name} was inserted successfully into {DocsDB.Settings.name} collection"
-                else:
-                    msg: str = f"File: {item_data_doc_db.file_name} was updated successfully into {DocsDB.Settings.name} collection"
-                print(msg)
-                logger.debug(msg)
-                res_insert_or_update_docs.append(item_insert_or_update_doc)
-            await bulk_writer.commit()
+                    item_insert_or_update_doc = await DocsDB.find_one(
+                        DocsDB.document_id["value"] == item_data_doc_db.document_id["value"],
+                        DocsDB.schema_version == item_data_doc_db.schema_version,
+                        DocsDB.file_name == item_data_doc_db.file_name,
+                        DocsDB.type == item_data_doc_db.type
+                    ).upsert(Set({
+                        **items_doc_model.dict()
+                    }), on_insert=item_data_doc_db, session=session)
+                    if isinstance(item_insert_or_update_doc, DocsDB):
+                        msg: str = f"File: {item_data_doc_db.file_name} was inserted successfully into {DocsDB.Settings.name} collection"
+                    else:
+                        msg: str = f"File: {item_data_doc_db.file_name} was updated successfully into {DocsDB.Settings.name} collection"
+                    print(msg)
+                    logger.debug(msg)
+                    res_insert_or_update_docs.append(item_insert_or_update_doc)
             logger.info(
                 f"successfully updated many document in mongodb database, {DocsDB.Settings.name} collection"
             )
